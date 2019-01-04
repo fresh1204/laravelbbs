@@ -11,7 +11,7 @@ $factory->define(App\Models\Topic::class, function (Faker $faker) {
 	// 传参为生成最大时间不超过，因为创建时间需永远比更改时间要早
 	$created_at = $faker->dateTimeThisMonth($updated_at);
     return [
-        'title' => $faker->title,
+        'title' => $sentence,
         'body' => $faker->text(),
         'excerpt' => $sentence,
         'created_at' => $created_at,

@@ -6,7 +6,8 @@ use App\Models\Topic;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TopicRequest;
-
+use App\Models\Category;
+use Auth;
 class TopicsController extends Controller
 {
     public function __construct()
@@ -30,15 +31,22 @@ class TopicsController extends Controller
         return view('topics.show', compact('topic'));
     }
 
+    //发布帖子表单
 	public function create(Topic $topic)
-	{
-		return view('topics.create_and_edit', compact('topic'));
+	{	
+		//获取分类列表
+		$categories = Category::all();
+		return view('topics.create_and_edit', compact('topic','categories'));
 	}
 
-	public function store(TopicRequest $request)
+	//对发布帖子进行数据处理
+	public function store(TopicRequest $request,Topic $topic)
 	{
-		$topic = Topic::create($request->all());
-		return redirect()->route('topics.show', $topic->id)->with('message', 'Created successfully.');
+		$topic->fill($request->all());
+		$topic->user_id = Auth::id();
+		$topic->save();
+
+		return redirect()->route('topics.show', $topic->id)->with('success', '帖子创建成功!');
 	}
 
 	public function edit(Topic $topic)

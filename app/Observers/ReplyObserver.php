@@ -11,11 +11,21 @@ class ReplyObserver
 {
     public function creating(Reply $reply)
     {
-        //
+        //对 content 字段进行净化处理(防止XSS注入)
+        $reply->content = clean($reply->content,'user_topic_body');
     }
 
     public function updating(Reply $reply)
     {
         //
+    }
+
+    //成功发表回复后评论数加1
+    public function created(Reply $reply)
+    {
+    	//$reply->topic->increment('reply_count',1);
+
+    	$reply->topic->reply_count = $reply->topic->replies->count();
+    	$reply->topic->save();
     }
 }

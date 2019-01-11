@@ -69,6 +69,8 @@ return array(
     'menu' => [
         '用户与权限' => [
             'users',
+            'roles',
+            'permissions',
         ],
     ],
 
@@ -106,7 +108,7 @@ return array(
      *
      * @type string
      */
-    
+
     // 用来作为后台主页的菜单条目，由 `use_dashboard` 选项决定，菜单指的是 `menu` 选项
     'home_page' => 'users',
 

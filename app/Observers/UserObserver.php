@@ -6,7 +6,7 @@ use App\Models\User;
 
 // creating, created, updating, updated, saving,
 // saved,  deleting, deleted, restoring, restored
-
+//用户监控器类
 class UserObserver
 {
     public function creating(User $user)

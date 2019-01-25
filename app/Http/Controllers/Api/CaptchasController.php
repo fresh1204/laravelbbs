@@ -28,6 +28,12 @@ class CaptchasController extends Controller
     		'expired_at' => $expiredAt->toDateTimeString(),
     	];
 
-    	return $this->response->array($result)->setStatusCode(201);
+    	return $this->response->array($result)
+            ->setMeta([
+                'access_token' => \Auth::guard('api')->fromUser($user),
+                'token_type' => 'Bearer',
+                'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60
+            ])
+            ->setStatusCode(201);
     }
 }

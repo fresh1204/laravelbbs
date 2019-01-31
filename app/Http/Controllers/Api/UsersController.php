@@ -40,7 +40,7 @@ class UsersController extends Controller
     public function me()
     {	
     	/*
-    		Dingo\Api\Routing\Helpers 这个 trait 提供了user方法,方便我们获取到当前登录的用户，
+    		Dingo\Api\Routing\Helpers 这个 trait 提供了user方法,方便我们获取当前登录的用户，
     		也就是token所对应的用户。$this->user() 等同于 \Auth::guard('api')->user()
 
     		我们返回的是一个单一资源，所以使用$this->response->item,第一个参数是模型实例，第二个参数是刚刚创建的
@@ -49,8 +49,10 @@ class UsersController extends Controller
     	return $this->response->item($this->user(), new UserTransformer());
     }
 
+    //编辑个人资料
     public function update(UserRequest $request)
-    {
+    {   
+        //获取用户对象
         $user = $this->user();
 
         $attributes = $request->only(['name', 'email', 'introduction']);

@@ -10,6 +10,7 @@ class UserTransformer extends TransformerAbstract
 {
     public function transform(User $user)
     {
+        //返回给客户端的响应数据
         return [
             'id' => $user->id,
             'name' => $user->name,

@@ -33,5 +33,15 @@ class AppServiceProvider extends ServiceProvider
         if (app()->isLocal()) {
             $this->app->register(\VIACreative\SudoSu\ServiceProvider::class);
         }
+
+        //处理404 not found 异常
+        \API::error(function (\Illuminate\Database\Eloquent\ModelNotFoundException $exception ){
+            abort(404);
+        });
+
+        //处理403权限异常
+        \API::error(function (\Illuminate\Auth\Access\AuthorizationException $exception){
+            abort(403,$exception->getMessage());
+        });
     }
 }

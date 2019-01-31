@@ -30,7 +30,7 @@ $api->version('v1', function($api) {
 
 $api->version('v1', [
 	'namespace' => 'App\Http\Controllers\Api',
-	'middleware' => 'serializer:array',
+	'middleware' => ['serializer:array','bindings']
 ],function($api) {
 	$api->group([
 		'middleware' => 'api.throttle',
@@ -70,6 +70,19 @@ $api->version('v1', [
     ], function ($api) {
         // 游客可以访问的接口
 
+        //分类列表 接口
+    	$api->get('categories','CategoriesController@index')
+    		->name('api.categories.index');
+
+    	//话题列表 接口
+    	$api->get('topics','TopicsController@index')->name('api.topics.index');
+
+    	//单个话题
+    	$api->get('topics/{topic}','TopicsController@show')->name('api.topics.show');
+
+    	//某个用户发布的话题
+    	$api->get('users/{user}/topics','TopicsController@userIndex')->name('api.users.topics.userIndex');
+
         // 需要 token 验证的接口(登录用户才可以访问的接口)
         $api->group(['middleware' => 'api.auth'], function($api) {
             // 当前登录用户信息
@@ -80,6 +93,18 @@ $api->version('v1', [
 
         	// 编辑登录用户信息
 			$api->patch('user', 'UsersController@update')->name('api.user.update');
+
+			//发布话题
+			$api->post('topics','TopicsController@store')->name('api.topics.store');
+
+			//修改话题
+			$api->patch('topics/{topic}','TopicsController@update')->name('api.topics.update');
+
+			//删除话题
+			$api->delete('topics/{topic}','TopicsController@destroy')->name('api.topics.destroy');
+
+			//发布回复 (为某个话题添加回复)
+			$api->post('topics/{topic}/replies','RepliesController@store')->name('api.topics.replies.store');
         });
 
 

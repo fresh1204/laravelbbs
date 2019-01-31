@@ -22,4 +22,18 @@ class RepliesController extends Controller
 
     	return $this->response->item($reply,new ReplyTransformer())->setStatusCode(201);
     }
+
+    //对话题某条回复进行删除
+    public function destroy(Topic $topic,Reply $reply)
+    {
+    	if($reply->topic_id != $topic->id){
+    		return $this->response->errorBadRequest();
+    	}
+
+    	$this->authorize('destroy',$reply);
+    	$reply->delete();
+
+    	return $this->response->noContent();
+    }
+
 }

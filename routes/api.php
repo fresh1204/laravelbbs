@@ -120,8 +120,9 @@ $api->version('v1', [
 			//消息列表
 			$api->get('user/notifications','NotificationsController@index')
 			->name('api.user.notifications.index');
-
-			
+			//消息统计
+			$api->get('user/notifications/stats','NotificationsController@stats')
+			->name('api.user.notifications.stats');
         });
 
 

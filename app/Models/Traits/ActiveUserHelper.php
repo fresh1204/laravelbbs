@@ -22,6 +22,7 @@
 		protected $cache_key = 'larabbs_active_users';
 		protected $cache_expire_in_minutes = 65;
 
+		//获取活跃用户
 		public function getActiveUsers()
 		{
 			// 尝试从缓存中取出 cache_key 对应的数据。如果能取到，便直接返回数据。

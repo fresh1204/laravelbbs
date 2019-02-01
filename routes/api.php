@@ -88,7 +88,11 @@ $api->version('v1', [
     	$api->get('topics/{topic}/replies','RepliesController@index')->name('api.topics.replies.index');
 
     	//某个用户的回复列表
-    	$api->get('users/{user}/replies','RepliesController@userIndex')->name('api.users.replies.userIndex');
+    	$api->get('users/{user}/replies','RepliesController@userIndex')
+    	->name('api.users.replies.userIndex');
+
+    	//资源推荐
+    	$api->get('links','LinksController@index')->name('api.links.index');
 
         // 需要 token 验证的接口(登录用户才可以访问的接口)
         $api->group(['middleware' => 'api.auth'], function($api) {
@@ -128,6 +132,11 @@ $api->version('v1', [
 			//标记消息通知为已读
 			$api->patch('user/read/notifications','NotificationsController@read')
 			->name('api.user.notifications.read');
+
+			//---------权限----------
+			//当前登录用户的权限
+			$api->get('user/permissions','PermissionsController@index')
+			->name('api.user.permissions.index');
         });
 
 

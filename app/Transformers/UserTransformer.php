@@ -8,6 +8,8 @@ use League\Fractal\TransformerAbstract;
 //数据转换层
 class UserTransformer extends TransformerAbstract
 {
+    protected $availableIncludes = ['roles'];
+
     public function transform(User $user)
     {
         //返回给客户端的响应数据
@@ -24,4 +26,11 @@ class UserTransformer extends TransformerAbstract
             'updated_at' => $user->updated_at->toDateTimeString(),
         ];
     }
+
+    //包含用户角色
+    public function includeRoles(User $user)
+    {
+        return $this->collection($user->roles,new RoleTransformer());
+    }
+    
 }

@@ -10,19 +10,23 @@ use App\Http\Requests\Api\UserRequest;
 
 class UsersController extends Controller
 {
+    //用户手机注册
     public function store(UserRequest $request)
     {
+        //从缓存中读取这个 key 对应的手机号码以及验证码
     	$verifyData = \Cache::get($request->verification_key);
+       
+        if(!$verifyData){
+            $this->response->error('验证码已失效',422);
+        }
 
-    	if(!$verifyData){
-    		$this->response->error('验证码已失效', 422);
-    	}
-
+        //对比验证码是否一致
     	if(!hash_equals($verifyData['code'],$request->verification_code)){
     		//返回401
     		return $this->response->errorUnauthorized('验证码错误');
     	}
-    	//return $verifyData;
+    	
+        //保存入库
     	$user = User::create([
     		'name' => $request->name,
     		'phone' => $verifyData['phone'],
@@ -43,8 +47,7 @@ class UsersController extends Controller
     		Dingo\Api\Routing\Helpers 这个 trait 提供了user方法,方便我们获取当前登录的用户，
     		也就是token所对应的用户。$this->user() 等同于 \Auth::guard('api')->user()
 
-    		我们返回的是一个单一资源，所以使用$this->response->item,第一个参数是模型实例，第二个参数是刚刚创建的
-    		transformer.
+    		我们返回的是一个单一资源，所以使用$this->response->item,第一个参数是模型实例，第二个参数是刚刚创建的transformer.
     	*/
     	return $this->response->item($this->user(), new UserTransformer());
     }
@@ -57,7 +60,8 @@ class UsersController extends Controller
 
         $attributes = $request->only(['name', 'email', 'introduction']);
 
-        if($request->avatar_image_id){
+        //修改头像时，我们先创建 avatar 类型的图片资源，然后提交 avatar_image_id 即可
+        if($request->avatar_image_id){//判断是否提交头像
             $image = Image::find($request->avatar_image_id);
             $attributes['avatar'] = $image->path;
         }

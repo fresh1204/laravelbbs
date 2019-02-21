@@ -8,14 +8,16 @@ use Gregwar\Captcha\CaptchaBuilder;
 
 class CaptchasController extends Controller
 {
+    //图片验证码
     public function store(CaptchaRequest $request,CaptchaBuilder $captchaBuilder)
     {
+        //生成一个随机key
     	$key = 'captcha-' . str_random(15);
     	$phone = $request->phone;
 
     	//创建验证码图片
     	$captcha = $captchaBuilder->build();
-    	//设置2分钟过期
+    	//设置5分钟过期
     	$expiredAt = now()->addMinutes(5);
 
     	//使用 getPhrase 方法获取验证码文本
@@ -28,6 +30,9 @@ class CaptchasController extends Controller
     		'expired_at' => $expiredAt->toDateTimeString(),
     	];
 
+        return $this->response->array($result)->setStatusCode(201);
+
+        /*
     	return $this->response->array($result)
             ->setMeta([
                 'access_token' => \Auth::guard('api')->fromUser($user),
@@ -35,5 +40,7 @@ class CaptchasController extends Controller
                 'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60
             ])
             ->setStatusCode(201);
+        */
+
     }
 }

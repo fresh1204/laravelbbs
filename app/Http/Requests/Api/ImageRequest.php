@@ -27,9 +27,9 @@ class ImageRequest extends FormRequest
             'type' => 'required|string|in:avatar,topic',
         ];
 
-        if($this->type == 'avatar'){
+        if($this->type == 'avatar'){ //用户头像图片
             $rules['image'] = 'required|mimes:jpeg,bmp,png,gif|dimensions:min_width=200,min_height=200';
-        }else{
+        }else{ //话题图片
             $rules['image'] = 'required|mimes:jpeg,bmp,png,gif';
         }
 
@@ -39,6 +39,7 @@ class ImageRequest extends FormRequest
     public function messages()
     {
         return [
+            'image.mimes' => '图片的格式不符合jpeg,bmp,png,gif',
             'image.dimensions' => '图片的清晰度不够，宽和高需要 200px 以上',
         ];
     }

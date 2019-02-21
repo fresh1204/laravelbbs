@@ -50,4 +50,5 @@ class GenerateToken extends Command
         $ttl = 365*24*60;
         $this->info(\Auth::guard('api')->setTTL($ttl)->fromUser($user));
     }
+    
 }

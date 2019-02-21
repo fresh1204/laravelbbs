@@ -20,7 +20,7 @@ class AuthorizationsController extends Controller
     	$driver = \Socialite::driver($type);
 
     	try{
-    		if($code = $request->code){
+    		if($code = $request->code){//授权码
     			$response = $driver->getAccessTokenResponse($code);
     			$token = array_get($response,'access_token');
     		}else{
@@ -29,7 +29,7 @@ class AuthorizationsController extends Controller
     				$driver->setOpenId($request->openid);
     			}
     		}
-
+            //获取第三方用户信息
     		$oauthUser = $driver->userFromToken($token);
     	}catch (\Exception $e) {
             return $this->response->errorUnauthorized('参数错误，未获取用户信息');
@@ -44,7 +44,7 @@ class AuthorizationsController extends Controller
         			$user = User::where('weixin_openid',$oauthUser->getId())->first();
         		}
 
-        		// 没有用户，默认创建一个用户
+        		// 数据库中没有微信用户信息，默认创建一个用户
         		if(!$user){
         			$user = User::create([
                         'name' => $oauthUser->getNickname(),
@@ -56,6 +56,7 @@ class AuthorizationsController extends Controller
         		break;
         }
 
+
         //第三方登录获取 user 后，我们可以使用 fromUser 方法为某一个用户模型生成token
         $token = Auth::guard('api')->fromUser($user);
 
@@ -63,19 +64,26 @@ class AuthorizationsController extends Controller
         //return $this->response->array(['token' => $user->id]);
     }
 
-    //用户密码登录
+    //用户账号密码登录
     public function store(AuthorizationRequest $request)
     {
     	$username = $request->username;
 
+        //判断是手机登录还是邮箱登录
     	filter_var($username,FILTER_VALIDATE_EMAIL) ? 
     	$credentials['email'] = $username :
     	$credentials['phone'] = $username;
 
     	$credentials['password'] = $request->password;
+        /*
+            处理登录认证
+            attempt 方法接收键值数组对作为第一个参数，数组中的值被用于从数据库表中查找用户，因此，在上面的例子中，用户将会通过email 的值获取，如果用户被找到，经哈希运算后存储在数据库表中的密码将会和传递过来的经哈希运算处理的密码值进行比较。如果两个经哈希运算的密码相匹配那么将会为这个用户开启一个认证Session。
 
-    	if(!$token = Auth::guard('api')->attempt($credentials)){
-    		return $this->response->errorUnauthorized('用户名或密码错误');
+            如果认证成功的话 attempt 方法将会返回 true。否则，返回 false。
+        */
+    	if(!$token = Auth::guard('api')->attempt($credentials)){ 
+    		//return $this->response->errorUnauthorized('用户名或密码错误');
+            return $this->response->errorUnauthorized(trans('auth.failed'));
     	}
 
     	/*
@@ -89,8 +97,10 @@ class AuthorizationsController extends Controller
     	return $this->respondWithToken($token)->setStatusCode(201);
     }
 
+    //封装带$token的响应返回
     protected function respondWithToken($token)
     {
+        //var_dump(Auth::guard('api')->factory()->getTTL());exit;
     	return $this->response->array([
     		'access_token' => $token,
     		'token_type' => 'Bearer',

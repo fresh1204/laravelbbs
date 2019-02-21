@@ -54,6 +54,10 @@ $api->version('v1', [
 	    //用户登录
 	    $api->post('authorizations','AuthorizationsController@store')->name('api.authorizations.store');
 
+	    //小程序登录
+	    $api->post('weapp/authorizations','AuthorizationsController@weappStore')
+	    ->name('api.weapp.authorizations.weappStore');
+
 	    //刷新token(替换当前的授权凭证)
 	    $api->put('authorizations/current','AuthorizationsController@update')
 	    ->name('api.authorizations.update');

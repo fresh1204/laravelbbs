@@ -40,6 +40,57 @@ class UsersController extends Controller
     	return $this->response->item($user,new UserTransformer())->setStatusCode(201);
     }
 
+    //小程序用户手机注册
+    public function weappStore(UserRequest $request)
+    {
+        //从缓存中读取这个 key 对应的手机号码以及验证码
+        $verifyData = \Cache::get($request->verification_key);
+        if(! $verifyData){
+            return $this->response->error('验证码已失效',422);
+        }
+
+        // 判断验证码是否相等，不相等返回 401 错误
+        if(!hash_equals($request->verification_code,$verifyData['code'])){
+            return $this->response->errorUnauthorized('验证码错误');
+        }
+
+        // 获取微信的 openid 和 session_key
+        $miniProgram = \EasyWeChat::miniProgram();
+        //获取提交的微信的授权码 Code
+        $data = $miniProgram->auth->session($request->code);
+
+        if(isset($data['errcode'])){
+            return $this->response->errorUnauthorized('code 不正确');
+        }
+
+        // 如果微信 openid 对应的用户已存在，报错403
+        $user = User::find('weapp_openid',$data['openid'])->first();
+        if($user){
+            return $this->response->errorForbidden('微信已绑定该用户，请直接登录')
+        }
+
+        //创建用户,同时绑定微信 openid
+        $user = User::create([
+            'name' => $request->name,
+            'phone' => $verifyData['phone'],
+            'password' => bcrypt($request->password),
+            'weapp_openid' => $data['openid'],
+            'weixin_session_key' => $data['session_key'],
+        ]);
+
+        // 清除验证码缓存
+        \Cache::forget($request->verification_key);
+
+        // meta 中返回 Token 信息
+        return $this->response->item($user,new UserTransformer())
+            ->setMeta([
+                'access_token' => \Auth::guard('api')->fromUser($user),
+                'token_type' => 'Bearer',
+                'expires_in' => \Auth::guard('api')->factory()->getTTL() * 60
+            ])->setStatusCode(201);
+
+    }
+
     //获取用户信息
     public function me()
     {	

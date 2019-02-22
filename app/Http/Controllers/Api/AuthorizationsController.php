@@ -139,12 +139,14 @@ class AuthorizationsController extends Controller
             return $this->response->errorUnauthorized('code 错误');
         }
 
-        // 找到 openid 对应的用户
+        
         $openid = $data['openid'];
+
+        // 数据库中找 openid 对应的用户
         $user = User::where('weapp_openid',$openid)->first();
         $attributes['weixin_session_key'] = $data['session_key'];
 
-        // 未找到对应用户则需要提交用户名密码进行用户绑定
+        // 未找到对应用户，则需要提交用户名密码进行用户绑定(openid 绑定 用户)
         if(!$user){
             // 如果未提交用户名密码，403 错误提示
             if(!$username = $request->username){

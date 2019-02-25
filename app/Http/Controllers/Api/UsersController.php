@@ -64,9 +64,9 @@ class UsersController extends Controller
         }
 
         // 如果微信 openid 对应的用户已存在，报错403
-        $user = User::find('weapp_openid',$data['openid'])->first();
+        $user = User::where('weapp_openid',$data['openid'])->first();
         if($user){
-            return $this->response->errorForbidden('微信已绑定该用户，请直接登录')
+            return $this->response->errorForbidden('微信已绑定该用户，请直接登录');
         }
 
         //创建用户,同时绑定微信 openid

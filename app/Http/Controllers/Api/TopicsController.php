@@ -16,7 +16,7 @@ class TopicsController extends Controller
 		$query = $topic->query();
 
 		if($categoryId = $request->category_id){
-			$query->where('category_id',$category_id);
+			$query->where('category_id',$categoryId);
 		}
 
 		// 为了说明 N+1问题，不使用 scopeWithOrder

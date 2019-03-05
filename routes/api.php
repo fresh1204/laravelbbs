@@ -149,6 +149,9 @@ $api->version('v1', [
 			//标记消息通知为已读
 			$api->patch('user/read/notifications','NotificationsController@read')
 			->name('api.user.notifications.read');
+			//微信小程序调用
+			$api->put('user/read/notifications','NotificationsController@read')
+			->name('api.user.notifications.read.put');
 
 			//---------权限----------
 			//当前登录用户的权限

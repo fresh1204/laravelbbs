@@ -61,6 +61,12 @@ class Topic extends Model
     	return $this->hasMany(Reply::class);
     }
 
+    //获取一篇帖子的5条回复
+    public function topReplies()
+    {
+        return $this->hasMany(Reply::class)->limit(5);
+    }
+
     //更新帖子回复数
     public function updateReplyCount()
     {
